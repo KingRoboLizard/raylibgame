@@ -12,13 +12,20 @@ float gravity = 0.5f;
 
 int h = 0;
 
+int block = 0;
+
 bool doublejump = true;
 bool isOnGround = true;
 bool collideY = false;
 bool collideX = false;
 
+bool edited = false;
+
 int mx;
 int my;
+
+int mi = 0;
+int mj = 0;
 
 float s = 0;
 
@@ -35,139 +42,62 @@ playerImg.width = xs;
 playerImg.height = ys;
 
 int floor = 0;
-int room = 0;
-//platform  //bounce     //launch      //speed     //quicksand   //conveyor L    //conveyor R
-Color[] levelColor = new Color[] { Color.BLUE, Color.GREEN, Color.ORANGE, Color.LIME, Color.YELLOW, Color.DARKGRAY, Color.DARKGRAY };
+int room = 2;
+
+int[,] editlvl = { { 0 } };
+
+//platform  //speed     //launch      //bounce     //quicksand   //conveyor L    //conveyor R
+Color[] levelColor = new Color[] { Color.BLACK, Color.BLUE, Color.GREEN, Color.ORANGE, Color.LIME, Color.YELLOW, Color.DARKGRAY, Color.DARKGRAY };
 //1         //2          //3           //4         //5           //6             //7
-int[,] level3 = new int[,]
+
+Array[,] levels1 = new Array[5, 5];
+for (var i = 0; i < 5; i++)
 {
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-};
-int[,] level2 = new int[,]
-{
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 1, 3, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-};
-int[,] level2_1 = new int[,]
-{
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-};
-int[,] level1 = new int[,]
-{
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-};
-int[,] level0 = new int[,]
-{
-    {0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 2},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 2},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
-    {1, 3, 3, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1},
-};
+    for (var j = 0; j < 5; j++)
+    {
+        levels1[i, j] = readLevel($"level{j}_{i}");
+    }
+}
 
 
-Array[,] levels1 = new Array[,]
+static void writeLevel(int[,] level, int x, int y)
 {
-    {level0, level1, level2, level3},
-    {null, level3, level2_1 ,level3}
-};
+    var sw = new StreamWriter($"levels/level{x}_{y}");
+    for (var i = 0; i < level.GetLength(0); i++)
+    {
+        for (var j = 0; j < level.GetLength(1); j++)
+        {
+            var c = level[i, j];
+            sw.Write(level[i, j]);
+        }
+        sw.Write("\n");
+    }
+    sw.Flush();
+    sw.Close();
+}
+
+static int[,] readLevel(string file)
+{
+    int[,] level = new int[21, 25];
+    var sr = new StreamReader("levels/" + file);
+    for (var i = 0; i < 21; i++)
+    {
+        string line = sr.ReadLine();
+        char[] linearr = line.ToCharArray();
+        for (var j = 0; j < 25; j++)
+        {
+            line = linearr[j].ToString();
+            level[i, j] = int.Parse(line);
+        }
+    }
+    sr.Close();
+    return (level);
+}
 
 while (!Raylib.WindowShouldClose())
 {
+    mx = Raylib.GetMouseX();
+    my = Raylib.GetMouseY();
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.BLACK);
 
@@ -175,14 +105,12 @@ while (!Raylib.WindowShouldClose())
     {
         if (Raylib.IsKeyPressed(KeyboardKey.KEY_TAB)) { scene = "start"; }
         checkFloorRoom();
-        drawLevel((int[,])levels1[room, floor]); //also handles collision detection
+        drawLevel((int[,])levels1[floor, room]); //also handles collision detection
         PlayerMove();
         drawPlayer();
     }
     else if (scene == "start")
     {
-        mx = Raylib.GetMouseX();
-        my = Raylib.GetMouseY();
         if (mx > 50 && mx < 150)
         {
             if (my > 250 && my < 350)
@@ -199,7 +127,7 @@ while (!Raylib.WindowShouldClose())
                 Raylib.DrawRectangle(50, 400, 100, 25, Color.GRAY);
                 if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
                 {
-                    Console.WriteLine("idk what settings to have here");
+                    scene = "editmap";
                 }
             }
 
@@ -213,27 +141,117 @@ while (!Raylib.WindowShouldClose())
             }
         }
         Raylib.DrawText("Start", 50, 300, 24, Color.WHITE);
-        Raylib.DrawText("Options", 50, 400, 24, Color.WHITE);
+        Raylib.DrawText("Editmode", 50, 400, 24, Color.WHITE);
         Raylib.DrawText("Quit", 50, 500, 24, Color.WHITE);
 
         Raylib.DrawText("The Game of All Time", 50, 100, (int)(Math.Abs(Math.Sin(s)) * 20) + 10, Color.WHITE);
         s += 0.01f;
     }
-
+    else if (scene == "editmap")
+    {
+        Raylib.DrawRectangle(0, 0, 100, 50, Color.RED);
+        if (mx > 0 && mx < 100 && my > 0 && my < 50)
+        {
+            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+            {
+                scene = "start";
+            }
+        }
+        for (var i = 1; i < 6; i++)
+        {
+            for (var j = 0; j < 8; j++)
+            {
+                if (mx > i * 100 + 50 && mx < i * 100 + 150 && my > j * 80 && my < j * 80 + 80)
+                {
+                    Raylib.DrawRectangle(i * 100 + 50, j * 80 - 4, 100, 80, Color.DARKGRAY);
+                    if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+                    {
+                        mi = i - 1;
+                        mj = 7 - j;
+                        scene = "edit";
+                    }
+                }
+            }
+        }
+        for (var i = 0; i < 5; i++)
+        {
+            for (var j = 0; j < 4; j++)
+            {
+                drawMiniLevel((int[,])levels1[j, i], i, -j, 4);
+            }
+        }
+    }
+    else if (scene == "edit")
+    {
+        drawMiniLevel((int[,])levels1[mj, mi], -0.5, -6, 24);
+        editlvl = (int[,])levels1[mj, mi];
+        Raylib.DrawRectangle(0, 0, 50, 50, Color.RED);
+        if (mx < 50 && my < 50)
+        {
+            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+            {
+                levels1[mj, mi] = readLevel($"level{mi}_{mj}");
+                scene = "editmap";
+            }
+        }
+        if (edited)
+        {
+            Raylib.DrawRectangle(50, 0, 50, 50, Color.GREEN);
+            if (mx > 50 && mx < 100 && my < 50)
+            {
+                if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+                {
+                    levels1[mj, mi] = editlvl;
+                    writeLevel((int[,])levels1[mj, mi], mi, mj);
+                    scene = "editmap";
+                    edited = false;
+                }
+            }
+        }
+        for (var i = 4; i < 29; i++)
+        {
+            for (var j = 3; j < 23; j++)
+            {
+                if (mx > i * 24 + 4 && mx < i * 24 + 28 && my > j * 24 + 3 && my < j * 24 + 27)
+                {
+                    Rectangle recLine = new Rectangle(i * 24 + 4, j * 24 + 3, 24, 24);
+                    Raylib.DrawRectangleLinesEx(recLine, 5, levelColor[block]);
+                    if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON))
+                    {
+                        editlvl[j - 3, i - 4] = block;
+                        edited = true;
+                    }
+                }
+            }
+        }
+        for (var i = 0; i < 8; i++)
+        {
+            Raylib.DrawRectangle(i * 50, Raylib.GetScreenHeight() - 50, 50, 50, levelColor[i]);
+            if (mx > i * 50 && mx < i * 50 + 50 && my > Raylib.GetScreenHeight() - 50)
+            {
+                Rectangle recLine = new Rectangle(i * 50, Raylib.GetScreenHeight() - 50, 50, 50);
+                Raylib.DrawRectangleLinesEx(recLine, 5, Color.WHITE);
+                if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+                {
+                    block = i;
+                }
+            }
+        }
+    }
     Raylib.EndDrawing();
 }
 
 void checkFloorRoom()
 {
-    if (Player.y > Raylib.GetScreenHeight())
+    if (Player.y + ys / 2 > Raylib.GetScreenHeight())
     {
         floor++;
-        Player.y = 0;
+        Player.y = -ys / 2;
     }
-    else if (Player.y < -ys)
+    else if (Player.y + ys / 2 < -ys)
     {
         floor--;
-        Player.y = Raylib.GetScreenHeight();
+        Player.y = Raylib.GetScreenHeight() - ys / 2;
     }
 
     if (Player.x + xs / 2 > Raylib.GetScreenWidth())
@@ -246,12 +264,14 @@ void checkFloorRoom()
         room--;
         Player.x = Raylib.GetScreenWidth() - xs / 2;
     }
+    if (room > levels1.GetLength(1) - 1) { room = 0; }
+    else if (room < 0) { room = levels1.GetLength(1) - 1; }
 }
 
 void drawPlayer()
 {
     // Raylib.DrawRectangle((int)(Player.x + vel.X), Raylib.GetScreenHeight() - (int)Player.y - (int)vel.Y - ys, xs, ys, Color.RED);
-    Raylib.DrawTexture(playerImg, (int)Player.x, Raylib.GetScreenHeight() - (int)Player.y - ys, rgb());
+    Raylib.DrawTexture(playerImg, (int)Player.x, Raylib.GetScreenHeight() - (int)Player.y - ys, Color.WHITE);
     // Raylib.DrawRectangle((int)Player.x, Raylib.GetScreenHeight() - (int)Player.y - ys, xs, ys, rgb());
 }
 
@@ -297,8 +317,8 @@ void drawLevel(int[,] level)
         {
             if (level[i, j] != 0)
             {
-                if (i == 20) { Raylib.DrawRectangle(j * 32, i * 32 - 2, 32, 32, levelColor[level[i, j] - 1]); }
-                else { Raylib.DrawRectangle(j * 32, i * 32, 32, 32, levelColor[level[i, j] - 1]); }
+                if (i == 20) { Raylib.DrawRectangle(j * 32, i * 32 - 2, 32, 32, levelColor[level[i, j]]); }
+                else { Raylib.DrawRectangle(j * 32, i * 32, 32, 32, levelColor[level[i, j]]); }
                 if (Player.x + vel.X + xs > j * 32 && Player.x + vel.X < j * 32 + 32 && Raylib.GetScreenHeight() - Player.y - vel.Y - 1 > i * 32 && Raylib.GetScreenHeight() - Player.y - vel.Y - ys < i * 32 + 32)
                 {
                     if (vel.X > 0)
@@ -335,6 +355,21 @@ void drawLevel(int[,] level)
         }
     }
 }
+
+void drawMiniLevel(int[,] level, double x, int y, int size)
+{
+    for (var i = 0; i < level.GetLength(0); i++)
+    {
+        for (var j = 0; j < level.GetLength(1); j++)
+        {
+            if (level[i, j] != 0)
+            {
+                Raylib.DrawRectangle(j * size + (int)(x * 100) + 150, i * size + y * 80 + 556, size, size, levelColor[level[i, j]]);
+            }
+        }
+    }
+}
+
 
 Color rgb()
 {
