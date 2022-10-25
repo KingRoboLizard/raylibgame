@@ -4,7 +4,10 @@ string scene = "start";
 
 Raylib.InitWindow(800, 640, "game");
 Raylib.SetTargetFPS(60);
-int speed = 5;
+
+int defaultSpeed = 5;
+int speed = defaultSpeed;
+int crouchSpeed = 2;
 int JumpStrength = 10;
 int ys = 50;
 int xs = 50;
@@ -20,6 +23,7 @@ bool collideY = false;
 bool collideX = false;
 
 bool edited = false;
+bool map = false;
 
 int mx;
 int my;
@@ -31,7 +35,7 @@ float s = 0;
 
 Rectangle Player = new Rectangle(0, 0, xs, ys);
 Player.x = 200;
-Player.y = 400;
+Player.y = 100;
 
 System.Numerics.Vector2 vel;
 vel.Y = 0;
@@ -40,6 +44,8 @@ vel.X = 0;
 Texture2D playerImg = Raylib.LoadTexture("player.png");
 playerImg.width = xs;
 playerImg.height = ys;
+
+Color mapbg = new Color(100, 100, 100, 100);
 
 int floor = 0;
 int room = 2;
@@ -59,41 +65,6 @@ for (var i = 0; i < 5; i++)
     }
 }
 
-
-static void writeLevel(int[,] level, int x, int y)
-{
-    var sw = new StreamWriter($"levels/level{x}_{y}");
-    for (var i = 0; i < level.GetLength(0); i++)
-    {
-        for (var j = 0; j < level.GetLength(1); j++)
-        {
-            var c = level[i, j];
-            sw.Write(level[i, j]);
-        }
-        sw.Write("\n");
-    }
-    sw.Flush();
-    sw.Close();
-}
-
-static int[,] readLevel(string file)
-{
-    int[,] level = new int[21, 25];
-    var sr = new StreamReader("levels/" + file);
-    for (var i = 0; i < 21; i++)
-    {
-        string line = sr.ReadLine();
-        char[] linearr = line.ToCharArray();
-        for (var j = 0; j < 25; j++)
-        {
-            line = linearr[j].ToString();
-            level[i, j] = int.Parse(line);
-        }
-    }
-    sr.Close();
-    return (level);
-}
-
 while (!Raylib.WindowShouldClose())
 {
     mx = Raylib.GetMouseX();
@@ -103,11 +74,16 @@ while (!Raylib.WindowShouldClose())
 
     if (scene == "game")
     {
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_R)) { Player.x = 200; Player.y = 100; floor = 0; room = 2; }
         if (Raylib.IsKeyPressed(KeyboardKey.KEY_TAB)) { scene = "start"; }
         checkFloorRoom();
         drawLevel((int[,])levels1[floor, room]); //also handles collision detection
         PlayerMove();
         drawPlayer();
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_M))
+        {
+            map = !map;
+        }
     }
     else if (scene == "start")
     {
@@ -115,8 +91,8 @@ while (!Raylib.WindowShouldClose())
         {
             if (my > 250 && my < 350)
             {
-                Raylib.DrawRectangle(50, 300, 100, 25, Color.GRAY);
-                if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+                Raylib.DrawRectangle(50, 300, 70, 25, Color.GRAY);
+                if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT))
                 {
                     scene = "game";
                 }
@@ -124,8 +100,8 @@ while (!Raylib.WindowShouldClose())
 
             else if (my > 350 && my < 450)
             {
-                Raylib.DrawRectangle(50, 400, 100, 25, Color.GRAY);
-                if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+                Raylib.DrawRectangle(50, 400, 150, 25, Color.GRAY);
+                if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT))
                 {
                     scene = "editmap";
                 }
@@ -133,15 +109,15 @@ while (!Raylib.WindowShouldClose())
 
             else if (my > 450 && my < 550)
             {
-                Raylib.DrawRectangle(50, 500, 100, 25, Color.GRAY);
-                if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+                Raylib.DrawRectangle(50, 500, 50, 25, Color.GRAY);
+                if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT))
                 {
                     break;
                 }
             }
         }
         Raylib.DrawText("Start", 50, 300, 24, Color.WHITE);
-        Raylib.DrawText("Editmode", 50, 400, 24, Color.WHITE);
+        Raylib.DrawText("Level editor", 50, 400, 24, Color.WHITE);
         Raylib.DrawText("Quit", 50, 500, 24, Color.WHITE);
 
         Raylib.DrawText("The Game of All Time", 50, 100, (int)(Math.Abs(Math.Sin(s)) * 20) + 10, Color.WHITE);
@@ -152,7 +128,7 @@ while (!Raylib.WindowShouldClose())
         Raylib.DrawRectangle(0, 0, 100, 50, Color.RED);
         if (mx > 0 && mx < 100 && my > 0 && my < 50)
         {
-            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+            if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_LEFT_BUTTON))
             {
                 scene = "start";
             }
@@ -164,7 +140,7 @@ while (!Raylib.WindowShouldClose())
                 if (mx > i * 100 + 50 && mx < i * 100 + 150 && my > j * 80 && my < j * 80 + 80)
                 {
                     Raylib.DrawRectangle(i * 100 + 50, j * 80 - 4, 100, 80, Color.DARKGRAY);
-                    if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+                    if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT))
                     {
                         mi = i - 1;
                         mj = 7 - j;
@@ -183,13 +159,15 @@ while (!Raylib.WindowShouldClose())
     }
     else if (scene == "edit")
     {
+        Raylib.DrawRectangle(100, 75, 600, 480, mapbg);
         drawMiniLevel((int[,])levels1[mj, mi], -0.5, -6, 24);
         editlvl = (int[,])levels1[mj, mi];
         Raylib.DrawRectangle(0, 0, 50, 50, Color.RED);
         if (mx < 50 && my < 50)
         {
-            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+            if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_LEFT_BUTTON))
             {
+                edited = false;
                 levels1[mj, mi] = readLevel($"level{mi}_{mj}");
                 scene = "editmap";
             }
@@ -199,7 +177,7 @@ while (!Raylib.WindowShouldClose())
             Raylib.DrawRectangle(50, 0, 50, 50, Color.GREEN);
             if (mx > 50 && mx < 100 && my < 50)
             {
-                if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+                if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_LEFT_BUTTON))
                 {
                     levels1[mj, mi] = editlvl;
                     writeLevel((int[,])levels1[mj, mi], mi, mj);
@@ -238,8 +216,23 @@ while (!Raylib.WindowShouldClose())
             }
         }
     }
+    if (map)
+    {
+        speed = crouchSpeed;
+        Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenWidth(), mapbg);
+        for (var i = 0; i < 5; i++)
+        {
+            for (var j = 0; j < 4; j++)
+            {
+                drawMiniLevel((int[,])levels1[j, i], i, -j, 4);
+            }
+        }
+        Raylib.DrawRectangle((int)(Player.x / 8) + 100 * room + 150, Raylib.GetScreenHeight() - (int)(Player.y / 8) - 80 * floor - 12, 8, 8, Color.RED);
+    }
+    else { speed = defaultSpeed; }
     Raylib.EndDrawing();
 }
+
 
 void checkFloorRoom()
 {
@@ -271,7 +264,7 @@ void checkFloorRoom()
 void drawPlayer()
 {
     // Raylib.DrawRectangle((int)(Player.x + vel.X), Raylib.GetScreenHeight() - (int)Player.y - (int)vel.Y - ys, xs, ys, Color.RED);
-    Raylib.DrawTexture(playerImg, (int)Player.x, Raylib.GetScreenHeight() - (int)Player.y - ys, Color.WHITE);
+    Raylib.DrawTexture(playerImg, (int)Player.x, Raylib.GetScreenHeight() - (int)Player.y - ys, Color.RED);
     // Raylib.DrawRectangle((int)Player.x, Raylib.GetScreenHeight() - (int)Player.y - ys, xs, ys, rgb());
 }
 
@@ -288,10 +281,13 @@ void PlayerMove()
         if (vel.Y < 0) { vel.Y -= gravity / 2; }
     }
 
+    if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) { ys = 25; speed = crouchSpeed; playerImg.height = ys; }
+    else { ys = 50; playerImg.height = ys; }
+
     vel.X += (Raylib.IsKeyDown(KeyboardKey.KEY_D) - Raylib.IsKeyDown(KeyboardKey.KEY_A)) * speed;
     vel.X *= 0.5f;
 
-    if (Raylib.IsKeyPressed(KeyboardKey.KEY_W))
+    if (Raylib.IsKeyPressed(KeyboardKey.KEY_W) || Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE))
     {
         if (isOnGround)
         {
@@ -306,7 +302,6 @@ void PlayerMove()
 
     if (!collideX) { Player.x += vel.X; } else { collideX = false; }
     if (!collideY) { Player.y += vel.Y; } else { collideY = false; if (vel.Y < 0) { vel.Y = 0; } }
-    // if (Player.y < 0 || Player.y + vel.Y < 0) { collideY = false; if (vel.Y < 0) { vel.Y = 0; }; Player.y = 0; }
 }
 
 void drawLevel(int[,] level)
@@ -343,7 +338,7 @@ void drawLevel(int[,] level)
                     {
                         collideY = true;
                         doublejump = true;
-                        if (level[i, j] == 2) { speed = 10; } else { speed = 5; }
+                        if (level[i, j] == 2) { speed = 10; }
                         if (level[i, j] == 3) { vel.Y = 15; }
                         if (level[i, j] == 4) { vel.Y = -vel.Y / 1.5f; }
                         if (level[i, j] == 5) { collideY = false; vel.Y = -0.01f; }
@@ -370,6 +365,40 @@ void drawMiniLevel(int[,] level, double x, int y, int size)
     }
 }
 
+
+static void writeLevel(int[,] level, int x, int y)
+{
+    var sw = new StreamWriter($"levels/level{x}_{y}");
+    for (var i = 0; i < level.GetLength(0); i++)
+    {
+        for (var j = 0; j < level.GetLength(1); j++)
+        {
+            var c = level[i, j];
+            sw.Write(level[i, j]);
+        }
+        sw.Write("\n");
+    }
+    sw.Flush();
+    sw.Close();
+}
+
+static int[,] readLevel(string file)
+{
+    int[,] level = new int[21, 25];
+    var sr = new StreamReader("levels/" + file);
+    for (var i = 0; i < 21; i++)
+    {
+        string line = sr.ReadLine();
+        char[] linearr = line.ToCharArray();
+        for (var j = 0; j < 25; j++)
+        {
+            line = linearr[j].ToString();
+            level[i, j] = int.Parse(line);
+        }
+    }
+    sr.Close();
+    return (level);
+}
 
 Color rgb()
 {
