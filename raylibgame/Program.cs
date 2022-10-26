@@ -56,8 +56,8 @@ int[,] editlvl = { { 0 } };
 Color[] levelColor = new Color[] { Color.BLACK, Color.BLUE, Color.GREEN, Color.ORANGE, Color.LIME, Color.YELLOW, Color.DARKGRAY, Color.DARKGRAY };
 //1         //2          //3           //4         //5           //6             //7
 
-Array[,] levels1 = new Array[5, 5];
-for (var i = 0; i < 5; i++)
+Array[,] levels1 = new Array[8, 5];
+for (var i = 0; i < 8; i++)
 {
     for (var j = 0; j < 5; j++)
     {
@@ -65,6 +65,8 @@ for (var i = 0; i < 5; i++)
     }
 }
 
+
+Raylib.SetExitKey(KeyboardKey.KEY_NULL);
 while (!Raylib.WindowShouldClose())
 {
     mx = Raylib.GetMouseX();
@@ -74,19 +76,23 @@ while (!Raylib.WindowShouldClose())
 
     if (scene == "game")
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.KEY_R)) { Player.x = 200; Player.y = 100; floor = 0; room = 2; }
-        if (Raylib.IsKeyPressed(KeyboardKey.KEY_TAB)) { scene = "start"; }
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_R)) { Player.x = 200; Player.y = 400; floor = 3; room = 2; }
+        if (Raylib.IsKeyReleased(KeyboardKey.KEY_ESCAPE)) { scene = "start"; map = false; }
         checkFloorRoom();
         drawLevel((int[,])levels1[floor, room]); //also handles collision detection
         PlayerMove();
         drawPlayer();
-        if (Raylib.IsKeyPressed(KeyboardKey.KEY_M))
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_TAB))
         {
             map = !map;
         }
     }
     else if (scene == "start")
     {
+        if (Raylib.IsKeyReleased(KeyboardKey.KEY_ESCAPE))
+        {
+            scene = "game";
+        }
         if (mx > 50 && mx < 150)
         {
             if (my > 250 && my < 350)
@@ -151,7 +157,7 @@ while (!Raylib.WindowShouldClose())
         }
         for (var i = 0; i < 5; i++)
         {
-            for (var j = 0; j < 4; j++)
+            for (var j = 0; j < 8; j++)
             {
                 drawMiniLevel((int[,])levels1[j, i], i, -j, 4);
             }
