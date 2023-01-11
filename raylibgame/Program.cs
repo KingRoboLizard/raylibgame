@@ -77,7 +77,7 @@ while (!Raylib.WindowShouldClose())
     if (scene == "game")
     {
         if (Raylib.IsKeyPressed(KeyboardKey.KEY_R)) { Player.x = 200; Player.y = 400; floor = 3; room = 2; }
-        if (Raylib.IsKeyReleased(KeyboardKey.KEY_ESCAPE)) { scene = "start"; map = false; }
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE)) { scene = "start"; map = false; }
         checkFloorRoom();
         drawLevel((int[,])levels1[floor, room]); //also handles collision detection
         PlayerMove();
@@ -89,7 +89,7 @@ while (!Raylib.WindowShouldClose())
     }
     else if (scene == "start")
     {
-        if (Raylib.IsKeyReleased(KeyboardKey.KEY_ESCAPE))
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE))
         {
             scene = "game";
         }
